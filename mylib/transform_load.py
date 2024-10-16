@@ -10,27 +10,26 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logging.basicConfig(level=logging.DEBUG)
 
 # Debugging existing environment variables (before loading .env)
-logging.debug(f"Before loading .env - server_host: {os.getenv('server_host')}")
-logging.debug(f"Before loading .env - sql_http: {os.getenv('sql_http')}")
+logging.debug(f"Before loading .env - server_host: " f"{os.getenv('server_host')}")
+logging.debug(f"Before loading .env - sql_http: " f"{os.getenv('sql_http')}")
 logging.debug(
-    f"Before loading .env - databricks_api_key: {os.getenv('databricks_api_key')}"
+    f"Before loading .env - databricks_api_key: " f"{os.getenv('databricks_api_key')}"
 )
 
-# Load environment variables from .env file and force override any existing variables
+# Load environment variables from .env file and force override
 load_dotenv(override=True)
 
 # Debugging values after loading .env
-logging.debug(f"After loading .env - server_host: {os.getenv('server_host')}")
-logging.debug(f"After loading .env - sql_http: {os.getenv('sql_http')}")
+logging.debug(f"After loading .env - server_host: " f"{os.getenv('server_host')}")
+logging.debug(f"After loading .env - sql_http: " f"{os.getenv('sql_http')}")
 logging.debug(
-    f"After loading .env - databricks_api_key: {os.getenv('databricks_api_key')}"
+    f"After loading .env - databricks_api_key: " f"{os.getenv('databricks_api_key')}"
 )
 
 
 # Load the CSV file and insert it into Databricks
 def load(dataset="data/Spotify_Most_Streamed_Songs.csv"):
     """Transforms and Loads data into the Databricks database"""
-
     # Check if the dataset exists before proceeding
     if not os.path.exists(dataset):
         raise FileNotFoundError(f"Dataset file {dataset} not found.")

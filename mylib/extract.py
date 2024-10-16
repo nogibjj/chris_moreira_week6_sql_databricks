@@ -4,11 +4,15 @@ import pandas as pd
 
 
 def extract(
-    url="https://raw.githubusercontent.com/nogibjj/chris_moreira_week5_python_sql_db_project/main/data/Spotify_Most_Streamed_Songs.csv",
+    url=(
+        "https://raw.githubusercontent.com/"
+        "nogibjj/chris_moreira_week5_python_sql_db_project/main/"
+        "data/Spotify_Most_Streamed_Songs.csv"
+    ),
     file_path="data/Spotify_Most_Streamed_Songs.csv",
     timeout=10,  # Adding a timeout to avoid indefinite hanging
 ):
-    """Extract a url to a file path"""
+    """Extract a URL to a file path"""
 
     # Ensure the 'data' directory exists
     os.makedirs(os.path.dirname(file_path), exist_ok=True)

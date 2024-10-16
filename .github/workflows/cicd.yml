@@ -1,5 +1,6 @@
-name: CI
-on:
+name: CICD
+
+on: 
   push:
     branches: [ "main" ]
   pull_request:
@@ -9,15 +10,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      databricks_api_key: ${{ secrets.databricks_api_key }}
+      sql_server_host: ${{ secrets.sql_server_host }}
+      sql_http: ${{ secrets.sql_http }}
     steps:
       - uses: actions/checkout@v3
       - name: install packages
         run: make install
+      - name: format
+        run: make format
       - name: lint
         run: make lint
       - name: test
         run: make test
-      - name: format
-        run: make format
-      - name: deploy
-        run: make deploy
