@@ -9,20 +9,20 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logging.basicConfig(level=logging.DEBUG)
 
 # Debugging existing environment variables before loading the .env file
-logging.debug(f"Before loading .env - server_host: " f"{os.getenv('server_host')}")
-logging.debug(f"Before loading .env - sql_http: " f"{os.getenv('sql_http')}")
+logging.debug(f"Before loading .env - server_host: {os.getenv('server_host')}")
+logging.debug(f"Before loading .env - sql_http: {os.getenv('sql_http')}")
 logging.debug(
-    f"Before loading .env - databricks_api_key: " f"{os.getenv('databricks_api_key')}"
+    f"Before loading .env - databricks_api_key: {os.getenv('databricks_api_key')}"
 )
 
 # Load environment variables from .env file
 load_dotenv(override=True)
 
 # Debugging values after loading the .env file
-logging.debug(f"After loading .env - server_host: " f"{os.getenv('server_host')}")
-logging.debug(f"After loading .env - sql_http: " f"{os.getenv('sql_http')}")
+logging.debug(f"After loading .env - server_host: {os.getenv('server_host')}")
+logging.debug(f"After loading .env - sql_http: {os.getenv('sql_http')}")
 logging.debug(
-    f"After loading .env - databricks_api_key: " f"{os.getenv('databricks_api_key')}"
+    f"After loading .env - databricks_api_key: {os.getenv('databricks_api_key')}"
 )
 
 
@@ -33,7 +33,7 @@ def get_connection():
     http_path = os.getenv("sql_http")
 
     # Debugging connection details
-    logging.debug(f"Connecting to Databricks at: " f"{server_h}{http_path}")
+    logging.debug(f"Connecting to Databricks at: {server_h}{http_path}")
 
     try:
         # Connect to Databricks
@@ -89,10 +89,12 @@ def query_aggregate():
             s.released_year,
             COUNT(s.track_name) AS track_count,
             SUM(s.in_spotify_playlists) AS total_in_spotify_playlists,
-            COUNT(CASE WHEN a.Single_Double = 'Single Artist' THEN 1 END) 
-            AS single_artist_count,
-            COUNT(CASE WHEN a.Single_Double = 'Multiple Artists' THEN 1 END) 
-            AS multiple_artist_count
+            COUNT(
+                CASE WHEN a.Single_Double = 'Single Artist' THEN 1 END
+            ) AS single_artist_count,
+            COUNT(
+                CASE WHEN a.Single_Double = 'Multiple Artists' THEN 1 END
+            ) AS multiple_artist_count
         FROM csm_87_SpotifyDB s
         LEFT JOIN (
             SELECT 
@@ -126,8 +128,12 @@ def query_sort():
             s.released_year,
             COUNT(s.track_name) AS track_count,
             SUM(s.in_spotify_playlists) AS total_in_spotify_playlists,
-            COUNT(CASE WHEN a.Single_Double = 'Single Artist' THEN 1 END) AS single_artist_count,
-            COUNT(CASE WHEN a.Single_Double = 'Multiple Artists' THEN 1 END) AS multiple_artist_count
+            COUNT(
+                CASE WHEN a.Single_Double = 'Single Artist' THEN 1 END
+            ) AS single_artist_count,
+            COUNT(
+                CASE WHEN a.Single_Double = 'Multiple Artists' THEN 1 END
+            ) AS multiple_artist_count
         FROM csm_87_SpotifyDB s
         LEFT JOIN (
             SELECT 

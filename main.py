@@ -1,9 +1,9 @@
-from mylib.extract import extract
+# from mylib.extract import extract
 from mylib.transform_load import load
 from mylib.query import query_join, query_aggregate, query_sort
 
 # Extract
-extract()
+# extract()
 
 # Transform & Load
 load()
