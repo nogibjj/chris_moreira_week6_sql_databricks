@@ -126,10 +126,8 @@ def query_sort():
             s.released_year,
             COUNT(s.track_name) AS track_count,
             SUM(s.in_spotify_playlists) AS total_in_spotify_playlists,
-            COUNT(CASE WHEN a.Single_Double = 'Single Artist' THEN 1 END) 
-            AS single_artist_count,
-            COUNT(CASE WHEN a.Single_Double = 'Multiple Artists' THEN 1 END) 
-            AS multiple_artist_count
+            COUNT(CASE WHEN a.Single_Double = 'Single Artist' THEN 1 END) AS single_artist_count,
+            COUNT(CASE WHEN a.Single_Double = 'Multiple Artists' THEN 1 END) AS multiple_artist_count
         FROM csm_87_SpotifyDB s
         LEFT JOIN (
             SELECT 
@@ -147,6 +145,14 @@ def query_sort():
 
     # Execute the query
     cursor.execute(query)
-    cursor.fetchall()
+    records = cursor.fetchall()
 
-    connection.close
+    # Debugging the fetched records
+    logging.debug(f"Sort Query Results: {records}")
+
+    if records:
+        connection.close()
+        return "Sort Success"
+    else:
+        connection.close()
+        return "Sort Failed"

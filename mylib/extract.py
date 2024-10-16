@@ -1,13 +1,10 @@
 import os
 import requests
+import pandas as pd
 
 
 def extract(
-    url=(
-        "https://raw.githubusercontent.com/"
-        "nogibjj/chris_moreira_week5_python_sql_db_project/main/"
-        "data/Spotify_Most_Streamed_Songs.csv"
-    ),
+    url="https://raw.githubusercontent.com/nogibjj/chris_moreira_week5_python_sql_db_project/main/data/Spotify_Most_Streamed_Songs.csv",
     file_path="data/Spotify_Most_Streamed_Songs.csv",
     timeout=10,  # Adding a timeout to avoid indefinite hanging
 ):
@@ -21,4 +18,5 @@ def extract(
         with open(file_path, "wb") as f:
             f.write(r.content)
 
-    return file_path
+    # Return "success" to indicate successful extraction
+    return "success"
