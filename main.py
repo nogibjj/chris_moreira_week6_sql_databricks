@@ -1,27 +1,25 @@
 from mylib.extract import extract
 from mylib.transform_load import load
-from mylib.query import query_create, query_read, query_update, query_delete
+from mylib.query import query_join, query_aggregate, query_sort
 
 # Extract
 extract()
 
-# transform & load
+# Transform & Load
 load()
 
-# Query
-query_create()
-query_read()
-query_update()
-query_delete()
 
-
+# Query operations
 def main_results():
-    results = {
-        "extract_to": extract(),
-        "transform_db": load(),
-        "create": query_create(),
-        "read": query_read(),
-        "update": query_update(),
-        "delete": query_delete(),
+    return {
+        "extract_to": extract(),  # Assuming this extracts to a CSV or destination
+        "transform_db": load(),  # Loading transformed data into Databricks
+        "join": query_join(),  # Perform the join query
+        "aggregate": query_aggregate(),  # Perform the aggregation query
+        "sort": query_sort(),  # Perform the sorting query
     }
-    return results
+
+
+if __name__ == "__main__":
+    results = main_results()
+    print("Main Results:", results)

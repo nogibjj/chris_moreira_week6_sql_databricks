@@ -1,99 +1,156 @@
-# Query the Database
+import os
+from databricks import sql
+from dotenv import load_dotenv
+import logging
+import urllib3
 
-import sqlite3
+# Disable SSL warnings and enable verbose logging
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+logging.basicConfig(level=logging.DEBUG)
 
+# Debugging existing environment variables before loading the .env file
+logging.debug(f"Before loading .env - server_host: {os.getenv('server_host')}")
+logging.debug(f"Before loading .env - sql_http: {os.getenv('sql_http')}")
+logging.debug(
+    f"Before loading .env - databricks_api_key: {os.getenv('databricks_api_key')}"
+)
 
-def query_create():
-    conn = sqlite3.connect("SpotifyDB.db")
-    cursor = conn.cursor()
+# Load environment variables from .env file
+load_dotenv(override=True)
 
-    # Inserting a random row into the SpotifyDB table
-    random_record = (
-        "Random Song",
-        "Random Artist",
-        1,
-        2024,
-        10,
-        3,
-        400,
-        100,
-        150000000,
-        200,
-        "C#",
-        "Major",
-        60,
-        70,
-        80,
-        10,
-        0,
-        20,
-        5,
-        "https://coverurl.com",
-    )
-
-    # Insert the record
-    cursor.execute(
-        """
-        INSERT INTO SpotifyDB (
-            track_name, artist_name, artist_count, released_year, released_month, 
-            released_day, in_spotify_playlists, in_spotify_charts, streams, 
-            in_apple_playlists, key, mode, danceability_percent, valence_percent, 
-            energy_percent, acousticness_percent, instrumentalness_percent, 
-            liveness_percent, speechiness_percent, cover_url
-        ) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-        random_record,
-    )
-
-    conn.commit()
-    conn.close()
-    return "Create Success"
+# Debugging values after loading the .env file
+logging.debug(f"After loading .env - server_host: {os.getenv('server_host')}")
+logging.debug(f"After loading .env - sql_http: {os.getenv('sql_http')}")
+logging.debug(
+    f"After loading .env - databricks_api_key: {os.getenv('databricks_api_key')}"
+)
 
 
-def query_read():
-    conn = sqlite3.connect("SpotifyDB.db")
-    cursor = conn.cursor()
+# Function to establish a connection to Databricks
+def get_connection():
+    server_h = os.getenv("server_host")
+    access_token = os.getenv("databricks_api_key")
+    http_path = os.getenv("sql_http")
 
-    # read execution
-    cursor.execute("SELECT * FROM SpotifyDB LIMIT 10")
+    # Debugging connection details
+    logging.debug(f"Connecting to Databricks at: {server_h}{http_path}")
 
-    conn.close()
-    return "Read Success"
-
-
-def query_update():
-    conn = sqlite3.connect("SpotifyDB.db")
-    cursor = conn.cursor()
-
-    # Update the artist_name to 'Chris' for the record where id is 3
-    cursor.execute(
-        """
-        UPDATE SpotifyDB 
-        SET artist_name = 'Chris' 
-        WHERE id = 3
-        """
-    )
-
-    conn.commit()
-    conn.close()
-    return "Update Success"
+    try:
+        # Connect to Databricks
+        connection = sql.connect(
+            server_hostname=server_h, http_path=http_path, access_token=access_token
+        )
+        return connection
+    except Exception as e:
+        logging.error(f"Failed to connect to Databricks: {e}")
+        raise
 
 
-def query_delete():
-    conn = sqlite3.connect("SpotifyDB.db")
-    cursor = conn.cursor()
+# Function for joining tables
+def query_join():
+    connection = get_connection()
+    cursor = connection.cursor()
 
-    # Delete the record where id is 5
-    cursor.execute("DELETE FROM SpotifyDB WHERE id = 5")
+    # SQL query for joining the table with a version of itself
+    query = """
+        WITH artist_version AS (
+            SELECT 
+                DISTINCT artist_name,
+                CASE 
+                    WHEN artist_name LIKE '%,%' THEN 'Multiple Artists'
+                    ELSE 'Single Artist'
+                END AS Single_Double
+            FROM csm_87_SpotifyDB
+        )
+        SELECT 
+            s.*,
+            a.Single_Double
+        FROM csm_87_SpotifyDB s
+        LEFT JOIN artist_version a
+        ON s.artist_name = a.artist_name
+    """
 
-    conn.commit()
-    conn.close()
-    return "Delete Success"
+    # Execute the query
+    cursor.execute(query)
+    cursor.fetchall()  # You can still fetch the records, but you don't need to return them here.
+
+    connection.close()
+    return "Join Success"  # Return success message
 
 
+# Function for aggregating the data
+def query_aggregate():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    # SQL query for aggregating data by year
+    query = """
+        SELECT 
+            s.released_year,
+            COUNT(s.track_name) AS track_count,
+            SUM(s.in_spotify_playlists) AS total_in_spotify_playlists,
+            COUNT(CASE WHEN a.Single_Double = 'Single Artist' THEN 1 END) AS single_artist_count,
+            COUNT(CASE WHEN a.Single_Double = 'Multiple Artists' THEN 1 END) AS multiple_artist_count
+        FROM csm_87_SpotifyDB s
+        LEFT JOIN (
+            SELECT 
+                DISTINCT artist_name,
+                CASE 
+                    WHEN artist_name LIKE '%,%' THEN 'Multiple Artists'
+                    ELSE 'Single Artist'
+                END AS Single_Double
+            FROM csm_87_SpotifyDB
+        ) a
+        ON s.artist_name = a.artist_name
+        GROUP BY s.released_year
+    """
+
+    # Execute the query
+    cursor.execute(query)
+    cursor.fetchall()
+
+    connection.close()
+    return "Aggregate Success"  # Return success message
+
+
+# Function for sorting the results
+def query_sort():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    # SQL query for sorting by year
+    query = """
+        SELECT 
+            s.released_year,
+            COUNT(s.track_name) AS track_count,
+            SUM(s.in_spotify_playlists) AS total_in_spotify_playlists,
+            COUNT(CASE WHEN a.Single_Double = 'Single Artist' THEN 1 END) AS single_artist_count,
+            COUNT(CASE WHEN a.Single_Double = 'Multiple Artists' THEN 1 END) AS multiple_artist_count
+        FROM csm_87_SpotifyDB s
+        LEFT JOIN (
+            SELECT 
+                DISTINCT artist_name,
+                CASE 
+                    WHEN artist_name LIKE '%,%' THEN 'Multiple Artists'
+                    ELSE 'Single Artist'
+                END AS Single_Double
+            FROM csm_87_SpotifyDB
+        ) a
+        ON s.artist_name = a.artist_name
+        GROUP BY s.released_year
+        ORDER BY s.released_year
+    """
+
+    # Execute the query
+    cursor.execute(query)
+    cursor.fetchall()
+
+    connection.close()
+    return "Sort Success"
+
+
+# Main function to execute the operations
 if __name__ == "__main__":
-    query_create()
-    query_read()
-    query_update()
-    query_delete()
+    query_join()
+    query_aggregate()
+    query_sort()
