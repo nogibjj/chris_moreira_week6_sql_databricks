@@ -58,7 +58,10 @@ def load(dataset="data/Spotify_Most_Streamed_Songs.csv"):
         raise ValueError("Environment variables not set correctly.")
 
     # Construct the correct URL with a slash between server_h and http_path
-    full_url = f"https://{server_h}{http_path if http_path.startswith('/') else '/' + http_path}"
+    full_url = (
+        f"https://{server_h}"
+        f"{http_path if http_path.startswith('/') else '/' + http_path}"
+    )
     logging.debug(f"Connecting to: {full_url}")
 
     # Connect to Databricks
