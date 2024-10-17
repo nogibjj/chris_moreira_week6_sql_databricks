@@ -82,6 +82,8 @@ SELECT
         ORDER BY s.released_year
 ```
 
+# Final Query Output with Spotify Track Insight
+![alt text](image-3.png)
 # Data Flow map for this project
 ![alt text](image-2.png)
 
