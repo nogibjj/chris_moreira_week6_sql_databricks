@@ -1,4 +1,4 @@
-# chris_moreira_project_week_5
+# SQL Database in Databricks Project
 # Status Badge for Sucessful Run
 [![CI](https://github.com/nogibjj/chris_moreira_week5_python_sql_db_project/actions/workflows/cicd.yml/badge.svg)](https://github.com/nogibjj/chris_moreira_week5_python_sql_db_project/actions/workflows/cicd.yml)
 
