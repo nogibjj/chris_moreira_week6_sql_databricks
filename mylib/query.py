@@ -4,39 +4,32 @@ from dotenv import load_dotenv
 import logging
 import urllib3
 
-# Disable SSL warnings and enable verbose logging
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logging.basicConfig(level=logging.DEBUG)
 
-# Debugging existing environment variables before loading the .env file
-logging.debug(f"Before loading .env - server_host: {os.getenv('server_host')}")
-logging.debug(f"Before loading .env - sql_http: {os.getenv('sql_http')}")
+logging.debug(f"Before loading .env - server_host: " f"{os.getenv('server_host')}")
+logging.debug(f"Before loading .env - sql_http: " f"{os.getenv('sql_http')}")
 logging.debug(
-    f"Before loading .env - databricks_api_key: {os.getenv('databricks_api_key')}"
+    f"Before loading .env - databricks_api_key: " f"{os.getenv('databricks_api_key')}"
 )
 
-# Load environment variables from .env file
 load_dotenv(override=True)
 
-# Debugging values after loading the .env file
-logging.debug(f"After loading .env - server_host: {os.getenv('server_host')}")
-logging.debug(f"After loading .env - sql_http: {os.getenv('sql_http')}")
+logging.debug(f"After loading .env - server_host: " f"{os.getenv('server_host')}")
+logging.debug(f"After loading .env - sql_http: " f"{os.getenv('sql_http')}")
 logging.debug(
-    f"After loading .env - databricks_api_key: {os.getenv('databricks_api_key')}"
+    f"After loading .env - databricks_api_key: " f"{os.getenv('databricks_api_key')}"
 )
 
 
-# Function to establish a connection to Databricks
 def get_connection():
     server_h = os.getenv("server_host")
     access_token = os.getenv("databricks_api_key")
     http_path = os.getenv("sql_http")
 
-    # Debugging connection details
     logging.debug(f"Connecting to Databricks at: {server_h}{http_path}")
 
     try:
-        # Connect to Databricks
         connection = sql.connect(
             server_hostname=server_h, http_path=http_path, access_token=access_token
         )
